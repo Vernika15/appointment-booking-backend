@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 import { Appointment } from "../models/appointmentModel";
 
-// @desc    Get all appointments
+/**
+ * @desc    Get all appointments
+ * @route   GET /api/appointments
+ * @access  Public
+ */
 export const getAppointments = async (_req: Request, res: Response) => {
   try {
+    // Fetch all appointment records from MongoDB
     const appointments = await Appointment.find();
     res.status(200).json(appointments);
   } catch (error) {
@@ -11,11 +16,16 @@ export const getAppointments = async (_req: Request, res: Response) => {
   }
 };
 
-// @desc    Create new appointment
+/**
+ * @desc    Create a new appointment
+ * @route   POST /api/appointments
+ * @access  Public
+ */
 export const createAppointment = async (req: Request, res: Response) => {
   try {
     const { name, doctorId, doctorName, date, slot, purpose } = req.body;
 
+    // Create a new appointment document
     const newAppointment = new Appointment({
       name,
       doctorId,
@@ -25,6 +35,7 @@ export const createAppointment = async (req: Request, res: Response) => {
       purpose,
     });
 
+    // Save the document to the database
     const saved = await newAppointment.save();
     res.status(201).json(saved);
   } catch (error) {
@@ -32,15 +43,23 @@ export const createAppointment = async (req: Request, res: Response) => {
   }
 };
 
-// @desc    Update appointment
+/**
+ * @desc    Update an existing appointment
+ * @route   PUT /api/appointments/:id
+ * @access  Public
+ */
 export const updateAppointment = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
+    // Find appointment by ID and update with new values
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       id,
       req.body,
-      { new: true, runValidators: true }
+      {
+        new: true, // return updated document
+        runValidators: true, // run schema validations
+      }
     );
 
     if (!updatedAppointment) {
@@ -54,10 +73,16 @@ export const updateAppointment = async (req: Request, res: Response) => {
   }
 };
 
-// @desc    Delete appointment
+/**
+ * @desc    Delete an appointment by ID
+ * @route   DELETE /api/appointments/:id
+ * @access  Public
+ */
 export const deleteAppointment = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+
+    // Find appointment by ID and delete
     const appointment = await Appointment.findByIdAndDelete(id);
 
     if (!appointment) {
