@@ -1,0 +1,15 @@
+services:
+  backend:
+    platform: linux/arm64
+    build:
+      context: .
+    env_file:
+      - .env
+    ports:
+      - "8081:8081"
+    networks:
+      - mern
+
+networks:
+  mern:
+    driver: bridge
